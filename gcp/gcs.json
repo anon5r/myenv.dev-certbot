@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "myenv-dev",
+  "private_key_id": "8af92dcedcef8d944f68cf40692569a49c6b39d0",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCh3Sc5iUMu9cC+\nUyMZ223D0s20CupRtcaZ5HH3U8aD8kx2gDdwKGXUffCnQv90MvN6OLLM007YMGla\nm1QMJgXUQKTUavefbbz/8111ubIYPJ1KbUhmmjw+NAW8w+GA0q42DLXnsqDAUIby\nbZ3ancDMwn7QK5hif1B/Sjx3F6OB8rVlhDDl1atqFUjsXirAfaMn0W6XLteBbKMu\nXiF/4nJFGtFkSBt6CEds/o6V5SdoQjpdZsvCgJQAs2+gQHWakfasR5kOv4cYe/r5\n2BW7O8QQB6N0xylLlYVlhT3BC4yJbDhf29mX6+AXDffblY9npQZf3M/ts/No/VtL\n1IFUYY+rAgMBAAECggEAMxqjXT+Qph1yJsUR4oKMk9SVHKCLnZOyKfld4BQjq5oO\n+ST/G9qtV9sRZYW6KKJDjBWlohSfIpOaV8CN1y4UDhEA2Y4SM1RO5VKdceNYrt1I\nXezF/Jr6pTsAirofkvAxj6AQuKAFr+Jc0OK6AYFoE13e8vOor4R50k6Ka6FbftW1\nVLmcped+cTbBaeWAfQZH3vZNqvQH5C3Yyjdh16YOf4jEQ+883LjKC/Yq/i5F3UAO\npTow4/Q61LmAaE5Lu0VrPuHmQZC9U9Nv+JBv7CYz+lN07h6BTmXjUrs/aiodyHqK\nTYH/HKe7Rn6q1KqiyiKVZ1Ujc/0UNyXBgjZJ61LcGQKBgQDLvzc79mAC7EDa6Uqk\nlsPOuBookriX9Zqci9mGJEumR/6TiflDlPgULtK1RJv8FbkFBkN4KalDwDNXTJ5n\nfhvFZ0yUoa3lpvKv/JFIqnlwNyQBB97it7ssadoyln8bqAbPMtBp15sro/BaQYpA\nlofnPKE8t1MAinYNXoqiL9yZaQKBgQDLYCaZJtxWUzFRoNRVltumjqHIBYrB0rqZ\nd7n8cs6JwLsF6lk55U17kVwIeeT1tQHs7aqwjdJ1xXRVZf2ryDR2+7XcailUuoqj\nSKSlAmGJulliTi6Dhjwg92FaUZH6aLN2uRN4hwcPXtHbP5ju71Whnb+KN1sQLR+c\nXgOzb7VJ8wKBgQCJ2d0QF9jMAXa75j3XcB4ZHhysuOBmCAlMw54wERyR64IF5sMc\ng4z5ctijRkFXZIcjLCK4CU/5g+/4r+E42m0FuadppJ5YlAT9JyBRDu5NCzGz9NRL\nhs3/9bpoocRsPNomlBXIltToyOmU12Un3/EhdbcNsmdZJVVMJFwd8c4KiQKBgQC0\nKdxnpiZhDtfM8UXJAJha51XoRQiUBaMqWwbW3bmcDLFhXyZmBH1sbuvx0lIDXLN0\n+WJRf4GmtSIGmRBswjHACeIkfaNZnNs+JRc92msfwIZ4cLwB5cOUjLGgekxwYZpC\nHVhjWHLnqd8MdD19xWW9g2pv/fPc06yCMELlDZuzAwKBgQC/Oa6GyHLHhmvD09Uw\nycw66jS0gkWzZWaQADkNAca635JbQ0xu0MjP5BoO8Qt6coyf9rVdsYJuEENN3r6b\n4N0t2Emn2foL0jr7UmvG27l25FBw//VfSgtVRcNy0Q8dQYMY3DtIj0xHpymCn49f\nMMqhEHSIcKBcADEnnJkMnkPudA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "cloud-storage-certs@myenv-dev.iam.gserviceaccount.com",
+  "client_id": "106354275320559094333",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/cloud-storage-certs%40myenv-dev.iam.gserviceaccount.com"
+}
