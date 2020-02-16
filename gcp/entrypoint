@@ -1,3 +1,28 @@
 #!/bin/sh
+GCS_BUCKET_NAME=${GCS_BUCKET_NAME:-myenvdev-certificates}
+CERTBOT_EMAIL=${EMAIL:-local@myenv.dev}
+CERTBOT_DOMAIN=${DOMAIN:-local.myenv.dev}
+
 crond -b -l 0 -L /var/log/cron.log
-certbot
+/bin/sh /opt/var/initializer
+if [ $# -ne 0 ]; then
+    certbot $@
+else 
+    certbot \
+        certonly \
+        --agree-tos \
+        --email ${CERTBOT_EMAIL} \
+        -n \
+        -d $CERTBOT_DOMAIN \
+        -d "*.${ERTBOT_DOMAIN}" \
+        --dns-cloudflare \
+        --dns-cloudflare-credentials /etc/letsencrypt/cloudflare/cloudflare.ini \
+        --dns-cloudflare-propagation-seconds 10
+fi
+
+# Copy certificates
+cp /etc/letsencrypt/live/$DOMAIN_NAME /mnt/gcs/$GCS_BUCKET_NAME/
+
+# Unmount
+umount /mnt/gcs/$GCS_BUCKET_NAME
+
