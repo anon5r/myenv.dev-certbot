@@ -14,7 +14,7 @@ else
         --email ${CERTBOT_EMAIL} \
         -n \
         -d $CERTBOT_DOMAIN \
-        -d "*.${ERTBOT_DOMAIN}" \
+        -d '*.${CERTBOT_DOMAIN}' \
         --dns-cloudflare \
         --dns-cloudflare-credentials /etc/letsencrypt/cloudflare/cloudflare.ini \
         --dns-cloudflare-propagation-seconds 10
