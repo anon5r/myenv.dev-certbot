@@ -3,12 +3,16 @@ GCS_BUCKET_NAME=${GCS_BUCKET_NAME:-myenvdev-certificates}
 CERTBOT_EMAIL=${EMAIL:-local@myenv.dev}
 CERTBOT_DOMAIN=${DOMAIN:-local.myenv.dev}
 GCSMP=/mnt/gcs/$GCS_BUCKET_NAME
+HTTP_SERVER_PORT=${HTTP_SERVER_PORT:-8080}
+HTTP_SERVER_RUNNING_TIMEOUT=${HTTP_SERVER_RUNNING_TIMEOUT:-30}
 
 LE_DIR=/etc/letsencrypt
 CF_CREDENTIAL=/etc/letsencrypt/cloudflare/cloudflare.ini
 
-DNS_OPT="--dns-cloudflare --dns-cloudflare-credentials $CF_CREDENTIAL --dns-cloudflare-propagation-seconds 5"
+PLUGIN_OPT="--dns-cloudflare --dns-cloudflare-credentials $CF_CREDENTIAL --dns-cloudflare-propagation-seconds 5"
+
 DEBUG=0
+
 if [ $# -ne 0 ] && [ $1 = "debug" ] ; then
     DEBUG=1
 fi
@@ -32,36 +36,43 @@ fi
 
 if [ $DEBUG -eq 1 ] ; then
     if [ -e $LE_DIR/archives/$CERTBOT_DOMAIN ] ; then
-        certbot renew \
+        certbot \
+            renew \
             --dry-run \
-            $DNS_OPT
+            $PLUGIN_OPT
     else
-        certbot certonly \
+        certbot \
+            certonly \
             --staging \
             --agree-tos \
             --email ${CERTBOT_EMAIL} \
-            –preferred-challenges dns-01 \
+            --preferred-challenges dns-01 \
+            --noninteractive \
             -d $CERTBOT_DOMAIN \
             -d "*.${CERTBOT_DOMAIN}" \
-            -n \
-            $DNS_OPT
+            $PLUGIN_OPT
     fi
-elif [ $# -ne 0 ]; then
-    certbot $@
+else
+    if [ $# -ne 0 ]; then
+        certbot $@
 
-elif [ -e $LE_DIR/archives/$CERTBOT_DOMAIN ] ; then
-    certbot renew
-else 
-    certbot \
-        certonly \
-        --agree-tos \
-        --email ${CERTBOT_EMAIL} \
-        -n \
-        –preferred-challenges dns-01 \
-        -d $CERTBOT_DOMAIN \
-        -d "*.${CERTBOT_DOMAIN}" \
-        $DNS_OPT
+    elif [ -e $LE_DIR/archives/$CERTBOT_DOMAIN ] ; then
+        certbot \
+            renew \
+            $PLUGIN_OPT
+    else 
+        certbot \
+            certonly \
+            --agree-tos \
+            --email ${CERTBOT_EMAIL} \
+            --preferred-challenges dns-01 \
+            --noninteractive \
+            -d $CERTBOT_DOMAIN \
+            -d "*.${CERTBOT_DOMAIN}" \
+            $PLUGIN_OPT
+    fi
 fi
+
 if [ $? -eq 0 ] ; then
     # Copy certificates
     echo "Saving certificates..."
@@ -106,3 +117,5 @@ fi
 # Unmount
 umount /mnt/gcs/$GCS_BUCKET_NAME
 
+echo "Start HTTP server PORT=$HTTP_SERVER_PORT, will terminate later $HTTP_SERVER_RUNNING_TIMEOUT sec."
+timeout $HTTP_SERVER_RUNNING_TIMEOUT python -m http.server $HTTP_SERVER_PORT

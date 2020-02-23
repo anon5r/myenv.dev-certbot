@@ -1,11 +1,16 @@
 FROM certbot/dns-cloudflare:latest
 
 LABEL "dev.myenv.vendor"="ACME"
-LABEL version="1.0"
+LABEL version="1.1"
 LABEL description="Auto update/re-create certification"
 
 
 ENV GCS_BUCKET_NAME myenvdev-certificates
+ENV CERTBOT_EMAIL local@myenv.dev
+ENV CERTBOT_DOMAIN local.myenv.dev
+ENV HTTP_SERVER_PORT 8080
+ENV HTTP_SERVER_RUNNING_TIMEOUT 30
+
 
 ENV BUILD_DEPS \
     go \

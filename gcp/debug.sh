@@ -1,6 +1,6 @@
 #!/bin/sh
 
-docker run -it --rm \
+sudo docker run -it --rm \
     --privileged \
     --cap-add SYS_ADMIN --device /dev/fuse \
     --dns=8.8.8.8 \
