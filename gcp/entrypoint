@@ -2,27 +2,106 @@
 GCS_BUCKET_NAME=${GCS_BUCKET_NAME:-myenvdev-certificates}
 CERTBOT_EMAIL=${EMAIL:-local@myenv.dev}
 CERTBOT_DOMAIN=${DOMAIN:-local.myenv.dev}
+GCSMP=/mnt/gcs/$GCS_BUCKET_NAME
+
+LE_DIR=/etc/letsencrypt
+CF_CREDENTIAL=/etc/letsencrypt/cloudflare/cloudflare.ini
+
+DNS_OPT="--dns-cloudflare --dns-cloudflare-credentials $CF_CREDENTIAL --dns-cloudflare-propagation-seconds 5"
+DEBUG=0
+if [ $# -ne 0 ] && [ $1 = "debug" ] ; then
+    DEBUG=1
+fi
 
 crond -b -l 0 -L /var/log/cron.log
 /bin/sh /opt/var/initializer
-if [ $# -ne 0 ]; then
+{
+    echo -n "If you want continue, type \"go\": "
+    while read READ_DEBUG
+    do
+        case $READ_DEBUG in
+            "go" )
+                break
+                ;;
+            * )
+                echo -n "If you want tcontinue, type \"go\": "
+        esac
+    done
+}
+
+if [ $DEBUG -eq 1 ] ; then
+    if [ -e $LE_DIR/archives/$CERTBOT_DOMAIN ] ; then
+        certbot renew \
+            --dry-run \
+            $DNS_OPT
+    else
+        certbot certonly \
+            --staging \
+            --agree-tos \
+            --email ${CERTBOT_EMAIL} \
+            –preferred-challenges dns-01 \
+            -d $CERTBOT_DOMAIN \
+            -d "*.${CERTBOT_DOMAIN}" \
+            -n \
+            $DNS_OPT
+    fi
+elif [ $# -ne 0 ]; then
     certbot $@
+
+elif [ -e $LE_DIR/archives/$CERTBOT_DOMAIN ] ; then
+    certbot renew
 else 
     certbot \
         certonly \
         --agree-tos \
         --email ${CERTBOT_EMAIL} \
         -n \
+        –preferred-challenges dns-01 \
         -d $CERTBOT_DOMAIN \
-        -d '*.${CERTBOT_DOMAIN}' \
-        --dns-cloudflare \
-        --dns-cloudflare-credentials /etc/letsencrypt/cloudflare/cloudflare.ini \
-        --dns-cloudflare-propagation-seconds 10
+        -d "*.${CERTBOT_DOMAIN}" \
+        $DNS_OPT
+fi
+if [ $? -eq 0 ] ; then
+    # Copy certificates
+    echo "Saving certificates..."
+    cp -rfL $LE_DIR/live/$CERTBOT_DOMAIN $GCSMP/certs/
+
+    echo "Saving Let's Encrypt configurations..."
+    if [ -e $LE_DIR/accounts ] ; then
+        cp -rfL $LE_DIR/accounts $GCSMP/letsencrypt/
+    fi
+    if [ -e $LE_DIR/csr ] ; then
+        cp -rfL $LE_DIR/csr $GCSMP/letsencrypt/
+    fi
+    if [ -e $LE_DIR/keys ] ; then
+        cp -rfL $LE_DIR/keys $GCSMP/letsencrypt/
+    fi
+    if [ -e $LE_DIR/renewal ] ; then
+        cp -rfL $LE_DIR/renewal $GCSMP/letsencrypt/
+    fi
+    if [ -e $LE_DIR/renewal-hooks ] ; then
+        cp -rfL $LE_DIR/renewal-hooks $GCSMP/letsencrypt/
+    fi
+    if [ -e $LE_DIR/archive ] ; then
+        cp -rfL $LE_DIR/archive $GCSMP/letsencrypt/
+    fi
 fi
 
-# Copy certificates
-cp /etc/letsencrypt/live/$DOMAIN_NAME /mnt/gcs/$GCS_BUCKET_NAME/
 
+if [ $DEBUG -eq 1 ] ; then
+    # debug
+    echo -n "If you want to finish, type \"end\": "
+    while read READ_DEBUG
+    do
+        case $READ_DEBUG in
+            "end" )
+                break
+                ;;
+            * )
+                echo -n "If you want to finish, type \"end\": "
+        esac
+    done
+fi
 # Unmount
 umount /mnt/gcs/$GCS_BUCKET_NAME
 

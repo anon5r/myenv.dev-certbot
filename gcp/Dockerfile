@@ -58,7 +58,9 @@ RUN crond -b -l 0 -L /var/log/cron.log \
 COPY ./config/certbot.ini /certbot/config/certbot.ini
 COPY ./config/cloudflare.ini /etc/letsencrypt/cloudflare/cloudflare.ini
 COPY ./entrypoint /usr/bin/entrypoint
+RUN chmod 604 /etc/letsencrypt/cloudflare/cloudflare.ini
 RUN chmod a+x /usr/bin/entrypoint
 
+# Change entrypoint from original image certbot/certbot
+# ENTRYPOINT [ "certbot" ]
 ENTRYPOINT [ "entrypoint" ]
-
