@@ -15,7 +15,8 @@ fi
 
 crond -b -l 0 -L /var/log/cron.log
 /bin/sh /opt/var/initializer
-{
+
+if [ $DEBUG -eq 1 ] ; then
     echo -n "If you want continue, type \"go\": "
     while read READ_DEBUG
     do
@@ -27,7 +28,7 @@ crond -b -l 0 -L /var/log/cron.log
                 echo -n "If you want tcontinue, type \"go\": "
         esac
     done
-}
+fi
 
 if [ $DEBUG -eq 1 ] ; then
     if [ -e $LE_DIR/archives/$CERTBOT_DOMAIN ] ; then
