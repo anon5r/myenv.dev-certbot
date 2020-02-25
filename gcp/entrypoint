@@ -1,10 +1,10 @@
 #!/bin/sh
-GCS_BUCKET_NAME=${GCS_BUCKET_NAME:-myenvdev-certificates}
-CERTBOT_EMAIL=${EMAIL:-local@myenv.dev}
-CERTBOT_DOMAIN=${DOMAIN:-local.myenv.dev}
+GCS_BUCKET_NAME=${GCS_BUCKET_NAME:-GS_BUCKET_NAME}
+CERTBOT_EMAIL=${CERTBOT_EMAIL:-user\@example.com}
+CERTBOT_DOMAIN=${CERTBOT_DOMAIN:-www.example.com}
 GCSMP=/mnt/gcs/$GCS_BUCKET_NAME
-HTTP_SERVER_PORT=${HTTP_SERVER_PORT:-8080}
-HTTP_SERVER_RUNNING_TIMEOUT=${HTTP_SERVER_RUNNING_TIMEOUT:-30}
+HTTP_SERVER_PORT=${PORT:-8080}
+HTTP_SERVER_RUNNING_TIMEOUT=${HTTP_SERVER_RUNNING_TIMEOUT:-20}
 
 LE_DIR=/etc/letsencrypt
 CF_CREDENTIAL=/etc/letsencrypt/cloudflare/cloudflare.ini
@@ -16,6 +16,10 @@ DEBUG=0
 if [ $# -ne 0 ] && [ $1 = "debug" ] ; then
     DEBUG=1
 fi
+
+echo "Start HTTP server HTTP_SERVER_PORT=$HTTP_SERVER_PORT, will terminate later $HTTP_SERVER_RUNNING_TIMEOUT sec."
+timeout $HTTP_SERVER_RUNNING_TIMEOUT python -m http.server $HTTP_SERVER_PORT &
+
 
 crond -b -l 0 -L /var/log/cron.log
 /bin/sh /opt/var/initializer
@@ -34,6 +38,7 @@ if [ $DEBUG -eq 1 ] ; then
     done
 fi
 
+
 if [ $DEBUG -eq 1 ] ; then
     if [ -e $LE_DIR/archives/$CERTBOT_DOMAIN ] ; then
         certbot \
@@ -45,6 +50,7 @@ if [ $DEBUG -eq 1 ] ; then
             certonly \
             --staging \
             --agree-tos \
+            --register-unsafely-without-email \
             --email ${CERTBOT_EMAIL} \
             --preferred-challenges dns-01 \
             --noninteractive \
@@ -64,6 +70,7 @@ else
         certbot \
             certonly \
             --agree-tos \
+            --register-unsafely-without-email \
             --email ${CERTBOT_EMAIL} \
             --preferred-challenges dns-01 \
             --noninteractive \
@@ -117,5 +124,3 @@ fi
 # Unmount
 umount /mnt/gcs/$GCS_BUCKET_NAME
 
-echo "Start HTTP server PORT=$HTTP_SERVER_PORT, will terminate later $HTTP_SERVER_RUNNING_TIMEOUT sec."
-timeout $HTTP_SERVER_RUNNING_TIMEOUT python -m http.server $HTTP_SERVER_PORT

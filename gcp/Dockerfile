@@ -5,12 +5,13 @@ LABEL version="1.1"
 LABEL description="Auto update/re-create certification"
 
 
-ENV GCS_BUCKET_NAME myenvdev-certificates
-ENV CERTBOT_EMAIL local@myenv.dev
-ENV CERTBOT_DOMAIN local.myenv.dev
-ENV HTTP_SERVER_PORT 8080
-ENV HTTP_SERVER_RUNNING_TIMEOUT 30
+ENV GCS_BUCKET_NAME YOURBUCKET_NAME
+ENV CERTBOT_EMAIL YOUR.EMAIL\@EXAMPLE.COM
+ENV CERTBOT_DOMAIN YOUR-DOMAIN.EXAMPLE.COM
+ENV PORT 8080
+ENV HTTP_SERVER_RUNNING_TIMEOUT 180
 
+EXPOSE 80 443 8080
 
 ENV BUILD_DEPS \
     go \
@@ -39,7 +40,7 @@ RUN set -xe && \
 # Mount GCS with GCSFUSE
 COPY ./gcs.json /opt/etc/gcs.json
 ENV GOOGLE_APPLICATION_CREDENTIALS /opt/etc/gcs.json
-#RUN gcsfuse myenvdev-certificates /mnt/gcs/${GCS_BUCKET_NAME}
+#RUN gcsfuse $GCS_BUCKET_NAME /mnt/gcs/${GCS_BUCKET_NAME}
 
 
 # Write fstab
