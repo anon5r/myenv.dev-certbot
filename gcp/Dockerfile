@@ -8,10 +8,14 @@ LABEL description="Auto update/re-create certification"
 ENV GCS_BUCKET_NAME YOURBUCKET_NAME
 ENV CERTBOT_EMAIL YOUR.EMAIL\@EXAMPLE.COM
 ENV CERTBOT_DOMAIN YOUR-DOMAIN.EXAMPLE.COM
-ENV PORT 8080
 ENV HTTP_SERVER_RUNNING_TIMEOUT 180
 
-EXPOSE 80 443 8080
+ENV GCP_ACCOUNT=YOUR_GCP_ACCOUNT
+#ENV GCP_PROJECT_NAME YOUR_PROJECT
+#ENV DOMAIN_NAME www.example.com
+
+
+EXPOSE 80 8080
 
 ENV BUILD_DEPS \
     go \
@@ -23,50 +27,55 @@ ENV BUILD_DEPS \
     curl-dev
 
 ENV RUN_DEPS \
-    fuse \
-    curl
+#    fuse \
+    curl \
+    python3 \
+    py3-crcmod \
+    libc6-compat \
+    openssh-client \
+    gnupg
 
 ENV GOPATH /tmp/go
 ENV GO15VENDOREXPERIMENT 1
 
 # Build GCSFUSE
-RUN set -xe && \
-    apk add --no-cache $BUILD_DEPS $RUN_DEPS && \
-    go get -u github.com/googlecloudplatform/gcsfuse && \
-    mv $GOPATH/bin/gcsfuse /usr/sbin && \
-    apk del $BUILD_DEPS && \
-    rm -rf /tmp/*
+#RUN set -xe && \
+#    apk add --no-cache $BUILD_DEPS $RUN_DEPS && \
+#    go get -u github.com/googlecloudplatform/gcsfuse && \
+#    mv $GOPATH/bin/gcsfuse /usr/sbin && \
+#    apk del $BUILD_DEPS && \
+#    rm -rf /tmp/*
 
-# Mount GCS with GCSFUSE
-COPY ./gcs.json /opt/etc/gcs.json
-ENV GOOGLE_APPLICATION_CREDENTIALS /opt/etc/gcs.json
-#RUN gcsfuse $GCS_BUCKET_NAME /mnt/gcs/${GCS_BUCKET_NAME}
-
-
-# Write fstab
-RUN set - ; { \
-  echo "$GCS_BUCKET_NAME /mnt/gcs/${GCS_BUCKET_NAME} gcsfuse rw,noauto,user,key_file=/opt/etc/gcs.json" \
-; } | tee /etc/fstab
+COPY --from=google/cloud-sdk:alpine /google-cloud-sdk /google-cloud-sdk
+RUN PATH=/google-cloud-sdk/bin:$PATH \
+    && gcloud config set core/disable_usage_reporting true \
+    && gcloud config set component_manager/disable_update_check true \
+    && gcloud config set metrics/environment github_docker_image \
+    && gcloud --version
 
 
 # Startup script
-COPY initialize.sh /opt/var/initializer
-RUN touch /var/log/entrypoint.log && \
-    touch /var/log/cron.log
-RUN crond -b -l 0 -L /var/log/cron.log \
-&& set - ; { \
-    #echo 'PATH=/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin' && \
-    #echo 'SHELL=/bin/bash' && \
-    echo '@reboot /bin/bash /opt/var/initializer' \
-#; } | tee /etc/crontabs/root
-; } >> /etc/crontabs/root
+RUN mkdir -p /app
+COPY initialize.sh /app/initializer
+#RUN touch /var/log/entrypoint.log && \
+#    touch /var/log/cron.log
+#RUN crond -b -l 0 -L /var/log/cron.log \
+#&& set - ; { \
+#    #echo 'PATH=/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin' && \
+#    #echo 'SHELL=/bin/bash' && \
+#    echo '@reboot /bin/bash /app/initializer' \
+##; } | tee /etc/crontabs/root
+#; } >> /etc/crontabs/root
 
 COPY ./config/certbot.ini /certbot/config/certbot.ini
 COPY ./config/cloudflare.ini /etc/letsencrypt/cloudflare/cloudflare.ini
-COPY ./entrypoint /usr/bin/entrypoint
+COPY ./httpserver.py /app/httpserver.py
+COPY ./entrypoint.sh /app/entrypoint
+COPY ./gcs.json /app/gcs.json
 RUN chmod 604 /etc/letsencrypt/cloudflare/cloudflare.ini
-RUN chmod a+x /usr/bin/entrypoint
+RUN chmod a+x /app/entrypoint
 
+WORKDIR  /app
 # Change entrypoint from original image certbot/certbot
 # ENTRYPOINT [ "certbot" ]
-ENTRYPOINT [ "entrypoint" ]
+ENTRYPOINT [ "/app/entrypoint" ]
