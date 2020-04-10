@@ -71,7 +71,7 @@ COPY ./config/certbot.ini /certbot/config/certbot.ini
 COPY ./config/cloudflare.ini /etc/letsencrypt/cloudflare/cloudflare.ini
 COPY ./httpserver.py /app/httpserver.py
 COPY ./entrypoint.sh /app/entrypoint
-COPY ./gcs.json /app/gcs.json
+COPY ./gcs_tokens.json /app/gcs.json
 RUN chmod 604 /etc/letsencrypt/cloudflare/cloudflare.ini
 RUN chmod a+x /app/entrypoint
 
