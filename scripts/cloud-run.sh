@@ -6,7 +6,8 @@ PROJECT=myenv-dev
 REGION=us-central1
 
 CURDIR=$(pwd)
-cd $(dirname $0)
+cd $(dirname $0)/../
+
 
 gcloud beta run deploy $GRUN_SERVICE_NAME \
   --project $PROJECT \

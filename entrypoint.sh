@@ -126,9 +126,10 @@ fi
 #     done
 # fi
 
-#echo "Start HTTP server HTTP_SERVER_PORT=$HTTP_SERVER_PORT, will terminate later $HTTP_SERVER_RUNNING_TIMEOUT sec."
-#timeout $HTTP_SERVER_RUNNING_TIMEOUT python -m http.server $HTTP_SERVER_PORT &
-#python -m http.server $HTTP_SERVER_PORT &
-echo "Start HTTP server HTTP_SERVER_PORT=$HTTP_SERVER_PORT"
-python /app/httpserver.py $PORT
-
+if [ $# -ne 0 ]; then
+    #echo "Start HTTP server HTTP_SERVER_PORT=$HTTP_SERVER_PORT, will terminate later $HTTP_SERVER_RUNNING_TIMEOUT sec."
+    #timeout $HTTP_SERVER_RUNNING_TIMEOUT python -m http.server $HTTP_SERVER_PORT &
+    #python -m http.server $HTTP_SERVER_PORT &
+    echo "Start HTTP server HTTP_SERVER_PORT=$HTTP_SERVER_PORT"
+    python /app/httpserver.py $PORT
+fi
