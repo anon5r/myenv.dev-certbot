@@ -8,7 +8,8 @@ HTTP_SERVER_PORT=${PORT:-8080}
 #HTTP_SERVER_RUNNING_TIMEOUT=${HTTP_SERVER_RUNNING_TIMEOUT:-20}
 export PATH=/google-cloud-sdk/bin:$PATH
 
-LE_DIR=/etc/letsencrypt
+export LE_DIR=/etc/letsencrypt
+export LE_BACKUP_DIRS="accounts csr keys renewal renrewal-hooks archive"
 CF_CREDENTIAL=/etc/letsencrypt/cloudflare/cloudflare.ini
 
 PLUGIN_OPT="--dns-cloudflare --dns-cloudflare-credentials $CF_CREDENTIAL --dns-cloudflare-propagation-seconds 5"
@@ -80,56 +81,43 @@ else
     fi
 fi
 
-if [ $? -eq 0 ] ; then
-    # Copy certificates
-    echo "Saving certificates..."
+CERTBOT_PROC=$?
 
-    #cp -rfL $LE_DIR/live/$CERTBOT_DOMAIN $GCSMP/certs/
-    gsutil cp -r $LE_DIR/certs gs://$GCS_BUCKET_NAME/letsencrypt/
+if [ $CERTBOT_PROC -eq 0 ] ; then
+    # Copy certificates
+    if [ $(ls $LE_DIR/live/$CERTBOT_DOMAIN | wc -) -en 0 ] ; then
+        echo "Saving certificates..."
+        #cp -rfL $LE_DIR/live/$CERTBOT_DOMAIN $GCSMP/certs/
+        gsutil -m cp $LE_DIR/live/$CERTBOT_DOMAIN gs://$GCS_BUCKET_NAME/certs/
+        #gsutil cp -r $LE_DIR/certs gs://$GCS_BUCKET_NAME/letsencrypt/
+    fi
 
     echo "Saving Let's Encrypt configurations..."
-    if [ -e $LE_DIR/accounts ] ; then
-        gsutil cp -r $LE_DIR/accounts gs://$GCS_BUCKET_NAME/letsencrypt/
-    fi
-    if [ -e $LE_DIR/csr ] ; then
-        gsutil cp -r $LE_DIR/csr gs://$GCS_BUCKET_NAME/letsencrypt/
-    fi
-    if [ -e $LE_DIR/keys ] ; then
-        gsutil cp -r $LE_DIR/keys gs://$GCS_BUCKET_NAME/letsencrypt/
-    fi
-    if [ -e $LE_DIR/renewal ] ; then
-        cp -rfL $LE_DIR/renewal $GCSMP/letsencrypt/
-        gsutil cp -r $LE_DIR/renewal gs://$GCS_BUCKET_NAME/letsencrypt/
-    fi
-    if [ -e $LE_DIR/renewal-hooks ] ; then
-        cp -rfL $LE_DIR/renewal-hooks $GCSMP/letsencrypt/
-        gsutil cp -r $LE_DIR/renewa;-hooks gs://$GCS_BUCKET_NAME/letsencrypt/
-    fi
-    if [ -e $LE_DIR/archive ] ; then
-        gsutil cp -r $LE_DIR/archive gs://$GCS_BUCKET_NAME/letsencrypt/
-    fi
+
+    gsutil cp -r $LE_DIR/ gs://$GCS_BUCKET_NAME/letsencrypt/
+    
 fi
 
 
-# if [ $DEBUG -eq 1 ] ; then
-#     # debug
-#     echo -n "[DEBUG] If you want to finish, type \"end\": "
-#     while read READ_DEBUG
-#     do
-#         case $READ_DEBUG in
-#             "end" )
-#                 break
-#                 ;;
-#             * )
-#                 echo -n "[DEBUG] If you want to finish, type \"end\": "
-#         esac
-#     done
-# fi
+if [ $DEBUG -eq 1 ] ; then
+    # debug
+    echo -n "[DEBUG] If you want to finish, type \"end\": "
+    while read READ_DEBUG
+    do
+        case $READ_DEBUG in
+            "end" )
+                break
+                ;;
+            * )
+                echo -n "[DEBUG] If you want to finish, type \"end\": "
+        esac
+    done
+fi
 
-if [ $# -ne 0 ]; then
+if [ $CERTBOT_PROC -eq 0 ]; then
     #echo "Start HTTP server HTTP_SERVER_PORT=$HTTP_SERVER_PORT, will terminate later $HTTP_SERVER_RUNNING_TIMEOUT sec."
     #timeout $HTTP_SERVER_RUNNING_TIMEOUT python -m http.server $HTTP_SERVER_PORT &
     #python -m http.server $HTTP_SERVER_PORT &
     echo "Start HTTP server HTTP_SERVER_PORT=$HTTP_SERVER_PORT"
-    python /app/httpserver.py $PORT
+    python /app/httpserver.py $PORT &
 fi

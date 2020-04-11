@@ -48,7 +48,11 @@ ENV GO15VENDOREXPERIMENT 1
 
 COPY --from=google/cloud-sdk:alpine /google-cloud-sdk /google-cloud-sdk
 RUN PATH=/google-cloud-sdk/bin:$PATH \
-    && gcloud config set core/disable_usage_reporting true \
+    && gcloud config set disable_usage_reporting true \
+    && gcloud config set disable_file_logging true \
+    && gcloud config set disable_color true \
+    && gcloud config set disable_prompts true \
+    && gcloud config set pass_credentials_to_gsutil true \
     && gcloud config set component_manager/disable_update_check true \
     && gcloud config set metrics/environment github_docker_image \
     && gcloud --version
@@ -69,9 +73,9 @@ COPY initialize.sh /app/initializer
 
 COPY ./config/certbot.ini /certbot/config/certbot.ini
 COPY ./config/cloudflare.ini /etc/letsencrypt/cloudflare/cloudflare.ini
+COPY ./gcs_tokens.json /app/gcs.json
 COPY ./httpserver.py /app/httpserver.py
 COPY ./entrypoint.sh /app/entrypoint
-COPY ./gcs_tokens.json /app/gcs.json
 RUN chmod 604 /etc/letsencrypt/cloudflare/cloudflare.ini
 RUN chmod a+x /app/entrypoint
 

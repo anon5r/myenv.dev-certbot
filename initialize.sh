@@ -11,11 +11,11 @@ echo "Start Initialize"
 gcloud auth activate-service-account $GCP_SERVICE_ACCOUNT --key-file /app/gcs.json
 gcloud config set project $GCP_PROJECT_NAME
 
-gsutil cp -r gs://$GCS_BUCKET_NAME/letsencrypt/accounts $LE_DIR/accounts/
-gsutil cp -r gs://$GCS_BUCKET_NAME/letsencrypt/csr $LE_DIR/csr/
-gsutil cp -r gs://$GCS_BUCKET_NAME/letsencrypt/keys $LE_DIR/keys/
-gsutil cp -r gs://$GCS_BUCKET_NAME/letsencrypt/renewal $LE_DIR/renewal/
-gsutil cp -r gs://$GCS_BUCKET_NAME/letsencrypt/archive $LE_DIR/archive/
+
+if [ ! -d $LE_DIR ] ; then
+    mkdir -p $LE_DIR
+fi
+gsutil cp -r gs://$GCS_BUCKET_NAME/letsencrypt/ $LE_DIR/
 
 if [ ! -e $LE_DIR/live/$DOMAIN_NAME ] ; then
     mkdir -p $LE_DIR/live/$DOMAIN_NAME
@@ -26,4 +26,8 @@ if [ -d $LE_DIR/archive/$DOMAIN_NAME ] ; then
         ARCH_PATH=$(find $LE_DIR/archive/$DOMAIN_NAME/ \( -name $ARC_NAME\*.pem \) -print | tail -1)
         ln -sfn ../../archive/$DOMAIN_NAME/$(basename $ARCH_PATH) $LE_DIR/live/$DOMAIN_NAME/$ARC_NAME.pem
     done
+fi
+if [ ! -e $LE_DIR/archive/$DOMAIN_NAME ] ; then
+    rm -rf $LE_DIR/live/$DOMAIN_NAME
+    rmdir $LE_DIR/live
 fi

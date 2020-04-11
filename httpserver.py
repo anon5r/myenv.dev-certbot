@@ -21,6 +21,9 @@ class RequestHandler(BaseHTTPRequestHandler):
         # message = '\r\n'.join(self.path)
         self.wfile.write(message.encode())
         return
+
+
+
 if __name__ == '__main__':
     port = 8080
     if len(sys.argv) > 1:

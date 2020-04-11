@@ -1,14 +1,13 @@
 #!/bin/sh
-
 docker run -it --rm \
-    -v "/Users/anon/Workspace/repos/myenv.dev-certbot/artifacts:/etc/letsencrypt" \
-    -v "/Users/anon/Workspace/repos/myenv.dev-certbot/config/cloudflare:/etc/cloudflare" \
-    --dns=8.8.8.8 \
-    certbot/dns-cloudflare:latest certonly \
-    --agree-tos \
-    -m "local@myenv.dev" \
-    -d 'local.myenv.dev' \
-    -d '*.local.myenv.dev' \
-    --dns-cloudflare \
-    --dns-cloudflare-credentials /etc/cloudflare/cloudflare.ini \
-    --dns-cloudflare-propagation-seconds 10
+ --name myenvdev-certbot \
+ -p 443:443/tcp \
+ -p 80:80/tcp \
+ -p 8080:8080/tcp \
+ -e PORT=8080 \
+ -e GCS_BUCKET_NAME=certs.local.myenv.dev \
+ -e CERTBOT_EMAIL=local@myenv.dev \
+ -e CERTBOT_DOMAIN=local.myenv.dev \
+ -e GCP_PROJECT_NAME=myenv-dev \
+ -e GCP_ACCOUNT=cloud-storage-certs@myenv-dev.iam.gserviceaccount.com \
+ gcr.io/myenv-dev/certbot:latest debug
