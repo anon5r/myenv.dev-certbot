@@ -114,10 +114,9 @@ if [ $DEBUG -eq 1 ] ; then
     done
 fi
 
-if [ $CERTBOT_PROC -eq 0 ]; then
-    #echo "Start HTTP server HTTP_SERVER_PORT=$HTTP_SERVER_PORT, will terminate later $HTTP_SERVER_RUNNING_TIMEOUT sec."
-    #timeout $HTTP_SERVER_RUNNING_TIMEOUT python -m http.server $HTTP_SERVER_PORT &
-    #python -m http.server $HTTP_SERVER_PORT &
+#if [ $CERTBOT_PROC -eq 0 ]; then
     echo "Start HTTP server HTTP_SERVER_PORT=$HTTP_SERVER_PORT"
-    python /app/httpserver.py $PORT &
-fi
+    #python /app/httpserver.py $PORT
+    python -m http.server $PORT
+#fi
+

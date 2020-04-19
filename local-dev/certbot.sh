@@ -1,5 +1,5 @@
 #!/bin/sh
-docker run -it --rm \
+docker run --rm \
  --name myenvdev-certbot \
  -p 443:443/tcp \
  -p 80:80/tcp \

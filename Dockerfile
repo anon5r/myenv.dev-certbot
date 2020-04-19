@@ -29,8 +29,9 @@ ENV BUILD_DEPS \
 ENV RUN_DEPS \
 #    fuse \
     curl \
+    wget \
     python3 \
-    py3-crcmod \
+    #py3-crcmod \
     libc6-compat \
     openssh-client \
     gnupg
@@ -39,12 +40,10 @@ ENV GOPATH /tmp/go
 ENV GO15VENDOREXPERIMENT 1
 
 # Build GCSFUSE
-#RUN set -xe && \
-#    apk add --no-cache $BUILD_DEPS $RUN_DEPS && \
-#    go get -u github.com/googlecloudplatform/gcsfuse && \
-#    mv $GOPATH/bin/gcsfuse /usr/sbin && \
-#    apk del $BUILD_DEPS && \
-#    rm -rf /tmp/*
+RUN set -xe && \
+    apk add --no-cache $BUILD_DEPS $RUN_DEPS && \
+    apk del $BUILD_DEPS && \
+    rm -rf /tmp/*
 
 COPY --from=google/cloud-sdk:alpine /google-cloud-sdk /google-cloud-sdk
 RUN PATH=/google-cloud-sdk/bin:$PATH \
@@ -74,9 +73,10 @@ COPY initialize.sh /app/initializer
 COPY ./config/certbot.ini /certbot/config/certbot.ini
 COPY ./config/cloudflare.ini /etc/letsencrypt/cloudflare/cloudflare.ini
 COPY ./gcs_tokens.json /app/gcs.json
-COPY ./httpserver.py /app/httpserver.py
+#COPY ./httpserver.py /app/httpserver.py
 COPY ./entrypoint.sh /app/entrypoint
-RUN chmod 604 /etc/letsencrypt/cloudflare/cloudflare.ini
+COPY ./index.html /app/index.html
+RUN chmod 600 /etc/letsencrypt/cloudflare/cloudflare.ini
 RUN chmod a+x /app/entrypoint
 
 WORKDIR  /app
