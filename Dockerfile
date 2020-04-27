@@ -78,6 +78,7 @@ COPY ./entrypoint.sh /app/entrypoint
 COPY ./index.html /app/index.html
 RUN chmod 600 /etc/letsencrypt/cloudflare/cloudflare.ini
 RUN chmod a+x /app/entrypoint
+RUN mkdir -p /var/log/letsencrypt && chmod uo+rwX /var/log/letsencrypt
 
 WORKDIR  /app
 # Change entrypoint from original image certbot/certbot

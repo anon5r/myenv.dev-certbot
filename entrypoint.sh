@@ -55,6 +55,7 @@ if [ $DEBUG -eq 1 ] ; then
             --email ${CERTBOT_EMAIL} \
             --preferred-challenges dns-01 \
             --noninteractive \
+            --max-log-backups 0 \
             -d $CERTBOT_DOMAIN \
             -d "*.${CERTBOT_DOMAIN}" \
             $PLUGIN_OPT
@@ -75,6 +76,7 @@ else
             --email ${CERTBOT_EMAIL} \
             --preferred-challenges dns-01 \
             --noninteractive \
+            --max-log-backups 0 \
             -d $CERTBOT_DOMAIN \
             -d "*.${CERTBOT_DOMAIN}" \
             $PLUGIN_OPT
@@ -83,19 +85,24 @@ fi
 
 CERTBOT_PROC=$?
 
+echo -n "Certbot has been "
+if [ $CERTBOT_PROC -eq 0 ] ; then
+    echo "successfully completed."
+else
+    echo "error occurred."
+fi
+
 if [ $CERTBOT_PROC -eq 0 ] ; then
     # Copy certificates
-    if [ $(ls $LE_DIR/live/$CERTBOT_DOMAIN | wc -) -en 0 ] ; then
+    #if [ $(ls $LE_DIR/live/$CERTBOT_DOMAIN/ | wc -) -en 0 ] ; then
         echo "Saving certificates..."
         #cp -rfL $LE_DIR/live/$CERTBOT_DOMAIN $GCSMP/certs/
-        gsutil -m cp $LE_DIR/live/$CERTBOT_DOMAIN gs://$GCS_BUCKET_NAME/certs/
-        #gsutil cp -r $LE_DIR/certs gs://$GCS_BUCKET_NAME/letsencrypt/
-    fi
+        gsutil -m cp -a public-read -r $LE_DIR/live/$CERTBOT_DOMAIN/ gs://$GCS_BUCKET_NAME/certs/
+    #fi
 
     echo "Saving Let's Encrypt configurations..."
 
-    gsutil cp -r $LE_DIR/ gs://$GCS_BUCKET_NAME/letsencrypt/
-    
+    gsutil -m cp -r $LE_DIR/ gs://$GCS_BUCKET_NAME/  
 fi
 
 
