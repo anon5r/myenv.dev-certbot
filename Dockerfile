@@ -78,7 +78,6 @@ COPY ./gcs_tokens.json /app/gcs.json
 #COPY ./httpserver.py /app/httpserver.py
 COPY ./entrypoint.sh /app/entrypoint
 COPY ./index.html /app/index.html
-RUN chmod 600 /etc/letsencrypt/cloudflare/cloudflare.ini
 RUN chmod a+x /app/entrypoint
 RUN mkdir -p /var/log/letsencrypt && chmod uo+rwX /var/log/letsencrypt
 

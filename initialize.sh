@@ -16,6 +16,7 @@ set - ; { \
     echo "dns_cloudflare_email = $DNS_CLOUDFLARE_EMAIL" \ &&
     echo "dns_cloudflare_api_key = $DNS_CLOUDFLARE_API_KEY" \
 ; } | tee /etc/letsencrypt/cloudflare/cloudflare.ini
+chmod 600 /etc/letsencrypt/cloudflare/cloudflare.ini
 
 sed -i -e "s/%%%REPLACE_YOUR_EMAIL%%%/$CERTBOT_EMAIL/g" /certbot/config/certbot.ini
 sed -i -e "s/%%%REPLACE_YOUR_DOMAIN%%%/$CERTBOT_DOMAIN/g" /certbot/config/certbot.ini
