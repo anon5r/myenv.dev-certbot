@@ -22,9 +22,6 @@ sed -i -e "s/%%%REPLACE_YOUR_EMAIL%%%/$CERTBOT_EMAIL/g" /certbot/config/certbot.
 sed -i -e "s/%%%REPLACE_YOUR_DOMAIN%%%/$CERTBOT_DOMAIN/g" /certbot/config/certbot.ini
 
 
-
-#gcloud config set account $GCP_SERVICE_ACCOUNT
-#gcloud auth activate-service-account $GCP_SERVICE_ACCOUNT --key-file /app/gcs.json
 gcloud config set project $GCP_PROJECT_NAME
 
 

@@ -74,7 +74,6 @@ COPY initialize.sh /app/initializer
 
 
 COPY ./config/certbot.ini /certbot/config/certbot.ini
-COPY ./gcs_tokens.json /app/gcs.json
 #COPY ./httpserver.py /app/httpserver.py
 COPY ./entrypoint.sh /app/entrypoint
 COPY ./index.html /app/index.html
