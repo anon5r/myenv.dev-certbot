@@ -71,10 +71,11 @@ COPY initialize.sh /app/initializer
 #    echo '@reboot /bin/bash /app/initializer' \
 ##; } | tee /etc/crontabs/root
 #; } >> /etc/crontabs/root
-RUN set - ; { \
-   echo '# Cloudflare API credentials used by Certbot' && \
-   echo "dns_cloudflare_email = $DNS_CLOUDFLARE_EMAIL" \
-   echo "dns_cloudflare_api_key = $DNS_CLOUDFLARE_API_KEY" \
+RUN mkdir -p /etc/letsencrypt/cloudflare && \
+set - ; { \
+    echo '# Cloudflare API credentials used by Certbot' && \
+    echo "dns_cloudflare_email = $DNS_CLOUDFLARE_EMAIL" \
+    echo "dns_cloudflare_api_key = $DNS_CLOUDFLARE_API_KEY" \
 ; } | tee /etc/letsencrypt/cloudflare/cloudflare.ini
 
 
