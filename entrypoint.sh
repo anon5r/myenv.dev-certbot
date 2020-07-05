@@ -96,8 +96,13 @@ if [ $CERTBOT_PROC -eq 0 ] ; then
     # Copy certificates
     #if [ $(ls $LE_DIR/live/$CERTBOT_DOMAIN/ | wc -) -en 0 ] ; then
         echo "Saving certificates..."
-        #cp -rfL $LE_DIR/live/$CERTBOT_DOMAIN $GCSMP/certs/
-        gsutil -m cp -a public-read -r $LE_DIR/live/$CERTBOT_DOMAIN/ gs://$GCS_BUCKET_NAME/certs/
+        GS_TARGET="gs://${GCS_BUCKET_NAME}/certs/"
+        gsutil -m cp -e -a public-read -r $LE_DIR/live/$CERTBOT_DOMAIN/ gs://$GCS_BUCKET_NAME/certs/
+        
+        gsutil setmeta -h "Content-Type:application/x-pem-file" $GS_TARGET/$CERTBOT_DOMAIN/privkey.pem
+        gsutil setmeta -h "Content-Type:application/x-pem-file" $GS_TARGET/$CERTBOT_DOMAIN/cert.pem
+        gsutil setmeta -h "Content-Type:application/x-pem-file" $GS_TARGET/$CERTBOT_DOMAIN/chain.pem
+        gsutil setmeta -h "Content-Type:application/x-pem-file" $GS_TARGET/$CERTBOT_DOMAIN/fullchain.pem
     #fi
 
     echo "Saving Let's Encrypt configurations..."

@@ -13,6 +13,8 @@ ENV HTTP_SERVER_RUNNING_TIMEOUT 180
 ENV GCP_ACCOUNT=YOUR_GCP_ACCOUNT
 #ENV GCP_PROJECT_NAME YOUR_PROJECT
 #ENV DOMAIN_NAME www.example.com
+ENV DNS_CLOUDFLARE_EMAIL YOUR.EMAIL\@.EXAMPLE.COM
+ENV DNS_CLOUDFLARE_API_KEY CLOUDFLARE_API_KEY
 
 
 EXPOSE 80 8080
@@ -69,9 +71,16 @@ COPY initialize.sh /app/initializer
 #    echo '@reboot /bin/bash /app/initializer' \
 ##; } | tee /etc/crontabs/root
 #; } >> /etc/crontabs/root
+RUN set - ; { \
+   echo '# Cloudflare API credentials used by Certbot' && \
+   echo "dns_cloudflare_email = $DNS_CLOUDFLARE_EMAIL" \
+   echo "dns_cloudflare_api_key = $DNS_CLOUDFLARE_API_KEY" \
+; } | tee /etc/letsencrypt/cloudflare/cloudflare.ini
+
 
 COPY ./config/certbot.ini /certbot/config/certbot.ini
-COPY ./config/cloudflare.ini /etc/letsencrypt/cloudflare/cloudflare.ini
+RUN sed -i -e "s/%%%REPLACE_YOUR_EMAIL%%%/$CERTBOT_EMAIL/g" /certbot/config/certbot.ini && \
+sed -i -e "s/%%%REPLACE_YOUR_DOMAIN%%%/$CERTBOT_DOMAIN/g" /certbot/config/certbot.ini
 COPY ./gcs_tokens.json /app/gcs.json
 #COPY ./httpserver.py /app/httpserver.py
 COPY ./entrypoint.sh /app/entrypoint
