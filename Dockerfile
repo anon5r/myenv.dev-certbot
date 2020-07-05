@@ -71,17 +71,9 @@ COPY initialize.sh /app/initializer
 #    echo '@reboot /bin/bash /app/initializer' \
 ##; } | tee /etc/crontabs/root
 #; } >> /etc/crontabs/root
-RUN mkdir -p /etc/letsencrypt/cloudflare && \
-set - ; { \
-    echo '# Cloudflare API credentials used by Certbot' && \
-    echo "dns_cloudflare_email = $DNS_CLOUDFLARE_EMAIL" \
-    echo "dns_cloudflare_api_key = $DNS_CLOUDFLARE_API_KEY" \
-; } | tee /etc/letsencrypt/cloudflare/cloudflare.ini
 
 
 COPY ./config/certbot.ini /certbot/config/certbot.ini
-RUN sed -i -e "s/%%%REPLACE_YOUR_EMAIL%%%/$CERTBOT_EMAIL/g" /certbot/config/certbot.ini && \
-sed -i -e "s/%%%REPLACE_YOUR_DOMAIN%%%/$CERTBOT_DOMAIN/g" /certbot/config/certbot.ini
 COPY ./gcs_tokens.json /app/gcs.json
 #COPY ./httpserver.py /app/httpserver.py
 COPY ./entrypoint.sh /app/entrypoint
