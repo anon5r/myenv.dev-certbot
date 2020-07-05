@@ -9,7 +9,7 @@ echo "Start Initialize"
 
 # Configure certbot
 if [ ! -d /etc/letsencrypt/cloudflare ] ; then
-    mkdir -p /etc/letsencrypt/cloudflare &&
+    mkdir -p /etc/letsencrypt/cloudflare
 fi
 set - ; { \
     echo '# Cloudflare API credentials used by Certbot' && \
