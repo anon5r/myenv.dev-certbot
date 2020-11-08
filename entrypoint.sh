@@ -10,9 +10,11 @@ export PATH=/google-cloud-sdk/bin:$PATH
 
 export LE_DIR=/etc/letsencrypt
 export LE_BACKUP_DIRS="accounts csr keys renewal renrewal-hooks archive"
-CF_CREDENTIAL=/etc/letsencrypt/cloudflare/cloudflare.ini
+CF_CREDENTIAL=$LE_DIR/cloudflare/cloudflare.ini
+GOOG_CREDENTIAL=$LE_DIR/google/credentials.json
 
-PLUGIN_OPT="--dns-cloudflare --dns-cloudflare-credentials $CF_CREDENTIAL --dns-cloudflare-propagation-seconds 5"
+#PLUGIN_OPT="--dns-cloudflare --dns-cloudflare-credentials $CF_CREDENTIAL --dns-cloudflare-propagation-seconds 5"
+PLUGIN_OPT="--dns-google --dns-google-credentials $GOOG_CREDENTIAL --dns-google-propagation-seconds 5"
 
 DEBUG=0
 
@@ -97,7 +99,8 @@ if [ $CERTBOT_PROC -eq 0 ] ; then
     #if [ $(ls $LE_DIR/live/$CERTBOT_DOMAIN/ | wc -) -en 0 ] ; then
         echo "Saving certificates..."
         GS_TARGET="gs://${GCS_BUCKET_NAME}/certs/"
-        gsutil -m cp -e -a public-read -r $LE_DIR/live/$CERTBOT_DOMAIN/ gs://$GCS_BUCKET_NAME/certs/
+        cd $LE_DIR/live/$CERTBOT_DOMAIN/
+        gsutil -m cp -e -a public-read -r ./ gs://$GCS_BUCKET_NAME/certs/
         
         gsutil setmeta -h "Content-Type:application/x-pem-file" $GS_TARGET/$CERTBOT_DOMAIN/privkey.pem
         gsutil setmeta -h "Content-Type:application/x-pem-file" $GS_TARGET/$CERTBOT_DOMAIN/cert.pem
@@ -106,8 +109,8 @@ if [ $CERTBOT_PROC -eq 0 ] ; then
     #fi
 
     echo "Saving Let's Encrypt configurations..."
-
-    gsutil -m cp -r $LE_DIR/ gs://$GCS_BUCKET_NAME/  
+    cd $LE_DIR/
+    gsutil -m cp -r ./ gs://$GCS_BUCKET_NAME/  
 fi
 
 

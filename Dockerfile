@@ -1,4 +1,4 @@
-FROM certbot/dns-cloudflare:latest
+FROM certbot/dns-google:latest
 
 LABEL "dev.myenv.vendor"="ACME"
 LABEL version="1.1"
