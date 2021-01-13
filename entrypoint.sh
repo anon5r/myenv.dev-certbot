@@ -10,7 +10,7 @@ export PATH=/google-cloud-sdk/bin:$PATH
 
 export LE_DIR=/etc/letsencrypt
 export LE_BACKUP_DIRS="accounts csr keys renewal renrewal-hooks archive"
-CF_CREDENTIAL=$LE_DIR/cloudflare/cloudflare.ini
+# CF_CREDENTIAL=$LE_DIR/cloudflare/cloudflare.ini
 GOOG_CREDENTIAL=$LE_DIR/google/credentials.json
 
 #PLUGIN_OPT="--dns-cloudflare --dns-cloudflare-credentials $CF_CREDENTIAL --dns-cloudflare-propagation-seconds 5"
