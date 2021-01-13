@@ -1,5 +1,18 @@
 steps:
     - name: 'gcr.io/kaniko-project/executor:latest'
       args:
-        - --destination=gcr.io/myenv-dev/certbot:latest
+        - --destination=gcr.io/$PROJECT_ID/certbot:latest
         - --cache=true
+    # - name: 'gcr.io/cloud-builders/gcloud'
+    #   args: [ 'config', 'set', 'builds/use_kaniko', 'True' ]
+    # - name: 'gcr.io/cloud-builders/docker'
+    #   args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/certbot', '.' ]
+    - name: 'gcr.io/cloud-builders/docker'
+      args: [ 'push', 'gcr.io/$PROJECT_ID/certbot' ]
+    # Deploy container image to Cloud Run
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      entrypoint: gcloud
+      args: ['run', 'deploy', 'certbot', '--image', 'gcr.io/$PROJECT_ID/certbot', '--region', 'us-central1', '--platform', 'managed']
+images:
+  - 'gcr.io/$PROJECT_ID/certbot'
+
