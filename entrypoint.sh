@@ -1,6 +1,6 @@
 #!/bin/sh
-GCP_ACCOUNT=${GCP_ACCOUNT:-"cloud-storage-certs@myenv-dev.iam.gserviceaccount.com"}
-GCP_PROJECT_NAME=${GCP_PROJECT_NAME:-"myenv-dev"}
+GCP_PROJECT_NAME=${GCP_PROJECT_NAME:-"your-project-id"}
+GCP_ACCOUNT=${GCP_ACCOUNT:-"cloud-storage-certs@${GCP_PROJECT_NAME}.iam.gserviceaccount.com"}
 GCS_BUCKET_NAME=${GCS_BUCKET_NAME:-"BUCKET_NAME"}
 CERTBOT_EMAIL=${CERTBOT_EMAIL:-"user@example.com"}
 CERTBOT_DOMAIN=${CERTBOT_DOMAIN:-"www.example.com"}

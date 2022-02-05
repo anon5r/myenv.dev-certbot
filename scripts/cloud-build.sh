@@ -1,5 +1,5 @@
 #!/bin/sh
-PROJECT=myenv-dev
+PROJECT="your-project-id"
 CURDIR=$(pwd)
 cd $(dirname $0)/../
 gcloud builds submit \

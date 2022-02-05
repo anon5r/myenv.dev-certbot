@@ -1,7 +1,7 @@
 #!/bin/sh
-GCP_SERVICE_ACCOUNT=${GCP_SERVICE_ACCOUNT:-"cloud-storage-certs@myenv-dev.iam.gserviceaccount.com"}
-GCP_PROJECT_NAME=${GCP_PROJECT_NAME:-"myenv-dev"}
-DOMAIN_NAME=${DOMAIN_NAME:-local.myenv.dev}
+GCP_PROJECT_NAME=${GCP_PROJECT_NAME:-"your-project-id"}
+GCP_SERVICE_ACCOUNT=${GCP_SERVICE_ACCOUNT:-"cloud-storage-certs@${GCP_PROJECT_NAME}.iam.gserviceaccount.com"}
+DOMAIN_NAME=${DOMAIN_NAME:-"example.com"}
 GCS_BUCKET_NAME=${GCS_BUCKET_NAME:-myenvdev-certificates}
 LE_DIR=/etc/letsencrypt
 export PATH=/google-cloud-sdk/bin:$PATH
